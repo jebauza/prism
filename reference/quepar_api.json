@@ -1,0 +1,1554 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Quepar integration api",
+        "description": "This Api is private. To use it, contact us to generate your credentials.",
+        "contact": {
+            "email": "mail@mobilendo.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "{schema}://quepar.mobilendo.com/api",
+            "description": "development server",
+            "variables": {
+                "schema": {
+                    "enum": [
+                        "https",
+                        "http"
+                    ],
+                    "default": "https"
+                }
+            }
+        },
+        {
+            "url": "{schema}://quepar.local/api",
+            "description": "development server local",
+            "variables": {
+                "schema": {
+                    "enum": [
+                        "https",
+                        "http"
+                    ],
+                    "default": "http"
+                }
+            }
+        }
+    ],
+    "paths": {
+		"/prism_mosk/data": {
+            "get": {
+                "summary": "Public risk conditions",
+                "description": "",
+                "operationId": "prism_mosk/data",
+                "responses": {
+                    "200": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "__code": {
+                                            "example": "200"
+                                        },
+										"__dynamic": {
+											"example": true
+										}
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/requestBodies/response_500"
+                    }
+                }
+            }
+        },
+        "/auth/send_sms": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Send SMS with code for authentication",
+                "description": "",
+                "operationId": "auth/send_sms",
+                "parameters": [
+                    {
+                        "name": "nif",
+                        "in": "query",
+                        "description": "NIF of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "46387266M"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "User phone",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "622315046"
+                        }
+                    },
+                    {
+                        "name": "device_uuid",
+                        "in": "query",
+                        "description": "Device UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "68753A44–4D6F-1226–9C60–0050E4C00067"
+                        }
+                    }
+                ],
+                "responses": {
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "description": "these are the fields of the request",
+                                            "properties": {
+                                                "nif": {
+                                                    "example": [
+                                                        "The nif format is invalid.",
+                                                        "The phone number does not match the one registered in the system"
+                                                    ]
+                                                },
+                                                "phone": {
+                                                    "example": [
+                                                        "The phone field contains an invalid number.",
+                                                        "You have already sent an SMS with a verification code, please wait a minute.",
+                                                        "At the moment the system cannot send SMS. Wait a few minutes and try again."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/requestBodies/response_500"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "description": "",
+                "operationId": "auth/login",
+                "parameters": [
+                    {
+                        "name": "nif",
+                        "in": "query",
+                        "description": "NIF of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "46387266M"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "User phone",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "622315046"
+                        }
+                    },
+                    {
+                        "name": "sms_code",
+                        "in": "query",
+                        "description": "SMS code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "452369"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token_type": {
+                                            "example": "Bearer"
+                                        },
+                                        "expires_at": {
+                                            "example": "2021-08-10 15:00:00"
+                                        },
+                                        "access_token": {
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NhOGI5NzhiNDRmMDM5ODYyZDcyZDcwYmQ1ZDFlNGNhNWRiOWFhOWZiM2ZlOGRiN2Y3ZjMwNGFlZWRmOTg4NGRiYjZjZjI1ZGQ5NDNkZTQiLCJpYXQiOjE1OTcxMjk3MjAsIm5iZiI6MTU5NzEyOTcyMCwiZXhwIjoxNjI4NjY1NzE5LCJzdWIiOiI3Iiwic2NvcGVzIjpbXX0.PmPKlqkpQS0UxYVqXb6KdZtoouIUO7NyKW7bj9XweDMwmLUwmvvyCg7Z9wAMgJM0MsQl1-dTgd0XwP9e8Y9DbrAcvkjFVhOHnRPMsILSqNYk6XdFEIvqRtooOMjcdebRjuFO4Y39Tz8EAlfvVdYZu88J-j3ujJuIkE1fxo_wIeGL6gyjwUqeSiiUmM_BqFBvcBUfIaLYBXqkGtnrwNrKX10QcLfimCm6qgk3NtiQuEflFqWzkkq_uQoXOAOmk5UlPgUAWzxfvmmnSJ_B4rpKXa1DWCuP-ePL7ttA_DzuhWYlpTS4ovfdIvbTRg2p5eFOAqfko-1rzOwX1tjRQI4n6dsfVmyNAsfPTTVuF4se4gTomTx4uE-gDJ_yj52zeUHca5z4zkbTHZlH44TzF_MC2RfMQe6MLpNdT2EYlSzhWqlCDIMFF0-z101"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/requestBodies/response_404"
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "description": "these are the fields of the request",
+                                            "properties": {
+                                                "nif": {
+                                                    "example": [
+                                                        "The nif format is invalid."
+                                                    ]
+                                                },
+                                                "phone": {
+                                                    "example": [
+                                                        "The phone field contains an invalid number."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/requestBodies/response_500"
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "logout",
+                "description": "",
+                "operationId": "auth/logout",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/auth/user_info": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Authenticated user information",
+                "description": "",
+                "operationId": "auth/user_info",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/user_show_response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/auth/login_test": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login test",
+                "description": "",
+                "operationId": "auth/login_test",
+                "parameters": [
+                    {
+                        "name": "nif",
+                        "in": "query",
+                        "description": "Ej. B41109703, 85088965M, J53198446",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "description": "these are the fields of the request",
+                                            "properties": {
+                                                "nif": {
+                                                    "example": [
+                                                        "The nif format is invalid."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/check/nif": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Check nif",
+                "description": "Check that the nif has a valid format",
+                "operationId": "auth/check_nif",
+                "parameters": [
+                    {
+                        "name": "nif",
+                        "in": "query",
+                        "description": "B41109703",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "The Nif is valid"
+                                        },
+                                        "is_valid": {
+                                            "description": "values:0,1",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/burns/history": {
+            "get": {
+                "tags": [
+                    "Burns"
+                ],
+                "summary": "History Burns",
+                "description": "",
+                "operationId": "burns/history",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/burn_index_response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/burns/store": {
+            "post": {
+                "tags": [
+                    "Burns"
+                ],
+                "summary": "Store Burn",
+                "description": "",
+                "operationId": "burns/store",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/request_burn_store"
+                },
+                "responses": {
+                    "201": {
+                        "$ref": "#/components/requestBodies/response_201"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    },
+                    "422": {
+                        "$ref": "#/components/requestBodies/burn_store_response_422"
+                    },
+                    "500": {
+                        "$ref": "#/components/requestBodies/response_500"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/burns/{burn_id}/show": {
+            "get": {
+                "tags": [
+                    "Burns"
+                ],
+                "summary": "Show Burn",
+                "description": "",
+                "operationId": "burns/show",
+                "parameters": [
+                    {
+                        "name": "burn_id",
+                        "in": "path",
+                        "description": "Burning identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/burn_show_response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    },
+                    "404": {
+                        "$ref": "#/components/requestBodies/response_404"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/enclosures": {
+            "get": {
+                "tags": [
+                    "Enclosures"
+                ],
+                "summary": "Enclosures",
+                "description": "",
+                "operationId": "enclosures/index",
+                "parameters": [
+                    {
+                        "name": "parcel_id",
+                        "in": "query",
+                        "description": "Filter by parcel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4
+                        }
+                    },
+                    {
+                        "name": "filter_my_properties",
+                        "in": "query",
+                        "description": "Filter by properties",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/enclosure_index_response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "description": "these are the fields of the request",
+                                            "properties": {
+                                                "parcel_id": {
+                                                    "example": [
+                                                        "The selected parcel_id is invalid."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/municipalities": {
+            "get": {
+                "tags": [
+                    "Municipalities"
+                ],
+                "summary": "Municipalities",
+                "description": "",
+                "operationId": "municipalities/index",
+                "parameters": [
+                    {
+                        "name": "province_id",
+                        "in": "query",
+                        "description": "Filter by province",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    },
+                    {
+                        "name": "filter_my_properties",
+                        "in": "query",
+                        "description": "Filter by properties",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/municipality_index_response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "description": "these are the fields of the request",
+                                            "properties": {
+                                                "province_id": {
+                                                    "example": [
+                                                        "The selected province id is invalid."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/municipalities/{municipality_id}/polygons": {
+            "get": {
+                "tags": [
+                    "Municipalities"
+                ],
+                "summary": "Polygons",
+                "description": "",
+                "operationId": "municipalities/polygons",
+                "parameters": [
+                    {
+                        "name": "municipality_id",
+                        "in": "path",
+                        "description": "Municipality to which the polygons belong",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    },
+                    {
+                        "name": "filter_my_properties",
+                        "in": "query",
+                        "description": "Filter by properties",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": [
+                                    "4",
+                                    "18",
+                                    "21"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    },
+                    "404": {
+                        "$ref": "#/components/requestBodies/response_404"
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "description": "these are the fields of the request",
+                                            "properties": {
+                                                "filter_my_properties": {
+                                                    "example": [
+                                                        "The filter my properties field must be true or false."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/parcels": {
+            "get": {
+                "tags": [
+                    "Parcels"
+                ],
+                "summary": "Parcels",
+                "description": "",
+                "operationId": "parcels/index",
+                "parameters": [
+                    {
+                        "name": "municipality_id",
+                        "in": "query",
+                        "description": "Filter by municipality",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4
+                        }
+                    },
+                    {
+                        "name": "polygon",
+                        "in": "query",
+                        "description": "Filter by polygon",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "15"
+                        }
+                    },
+                    {
+                        "name": "filter_my_properties",
+                        "in": "query",
+                        "description": "Filter by properties",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/parcel_index_response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "description": "these are the fields of the request",
+                                            "properties": {
+                                                "municipality_id": {
+                                                    "example": [
+                                                        "The selected province id is invalid."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/provinces": {
+            "get": {
+                "tags": [
+                    "Provinces"
+                ],
+                "summary": "Provinces",
+                "description": "",
+                "operationId": "provinces/index",
+                "parameters": [
+                    {
+                        "name": "filter_my_properties",
+                        "in": "query",
+                        "description": "Filter by properties",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/province_index_response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/users/update/language": {
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update language",
+                "description": "",
+                "operationId": "users/update/language",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "query",
+                        "description": "Existing languages",
+                        "required": true,
+                        "schema": {
+                            "enum": [
+                                "castellano",
+                                "valenciano"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    },
+                    "422": {
+                        "description": "Error: Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "description": "these are the fields of the request",
+                                            "properties": {
+                                                "language": {
+                                                    "example": [
+                                                        "The language field is required."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/requestBodies/response_500"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/risk_conditions/public": {
+            "get": {
+                "tags": [
+                    "Risk conditions"
+                ],
+                "summary": "Public risk conditions",
+                "description": "",
+                "operationId": "risk_conditions/index_public",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/weatherCondition_index_response_200"
+                    },
+                    "500": {
+                        "$ref": "#/components/requestBodies/response_500"
+                    }
+                }
+            }
+        },
+        "/risk_conditions": {
+            "get": {
+                "tags": [
+                    "Risk conditions"
+                ],
+                "summary": "Risk conditions",
+                "description": "",
+                "operationId": "risk_conditions/index",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/requestBodies/weatherCondition_index_response_200"
+                    },
+                    "401": {
+                        "$ref": "#/components/requestBodies/response_401"
+                    },
+                    "500": {
+                        "$ref": "#/components/requestBodies/response_500"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "BurnHistoryResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 161
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 6
+                    },
+                    "province": {
+                        "type": "string",
+                        "example": "Valencia/Valéncia"
+                    },
+                    "municipality": {
+                        "type": "string",
+                        "example": "SUECA"
+                    },
+                    "polygon": {
+                        "type": "string",
+                        "example": "24"
+                    },
+                    "parcel": {
+                        "type": "string",
+                        "example": "15"
+                    },
+                    "enclosure": {
+                        "type": "string",
+                        "example": "2"
+                    },
+                    "date": {
+                        "type": "date",
+                        "example": "2020-08-11"
+                    },
+                    "time": {
+                        "type": "time",
+                        "example": "13:25"
+                    }
+                },
+                "type": "object"
+            },
+            "BurnResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 161
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 6
+                    },
+                    "province": {
+                        "type": "string",
+                        "example": "Valencia/Valéncia"
+                    },
+                    "municipality": {
+                        "type": "string",
+                        "example": "SUECA"
+                    },
+                    "polygon": {
+                        "type": "string",
+                        "example": "24"
+                    },
+                    "parcel": {
+                        "type": "string",
+                        "example": "15"
+                    },
+                    "enclosure": {
+                        "type": "string",
+                        "example": "2"
+                    },
+                    "latitude": {
+                        "type": "numeric",
+                        "example": "40.4169019"
+                    },
+                    "longitude": {
+                        "type": "numeric",
+                        "example": "-3.7056774"
+                    },
+                    "risk": {
+                        "type": "integer",
+                        "example": "4"
+                    },
+                    "date": {
+                        "type": "date",
+                        "example": "2020-08-11"
+                    },
+                    "time": {
+                        "type": "time",
+                        "example": "13:25"
+                    }
+                },
+                "type": "object"
+            },
+            "EnclosureResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 161
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "2"
+                    },
+                    "parcel_id": {
+                        "type": "integer",
+                        "example": 4
+                    }
+                },
+                "type": "object"
+            },
+            "MunicipalityResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 161
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "25"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Valencia"
+                    },
+                    "province_id": {
+                        "type": "integer",
+                        "example": "2"
+                    }
+                },
+                "type": "object"
+            },
+            "ParcelResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 161
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "30"
+                    },
+                    "polygon": {
+                        "type": "string",
+                        "example": "120"
+                    },
+                    "municipality_id": {
+                        "type": "integer",
+                        "example": 4
+                    },
+                    "enclosures": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EnclosureResource"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ProvinceResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Alicante/Alacant"
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 161
+                    },
+                    "nif": {
+                        "type": "string",
+                        "example": "46985422M"
+                    },
+                    "name": {
+                        "description": "nullable",
+                        "type": "string",
+                        "example": "Albreto Faker Faker"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "622589137"
+                    },
+                    "verify_number": {
+                        "type": "boolean",
+                        "example": 1
+                    },
+                    "count_properties": {
+                        "description": "Number of registered properties",
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "language": {
+                        "type": "string",
+                        "example": "castellano"
+                    },
+                    "created_at": {
+                        "type": "date",
+                        "example": "2020-06-25"
+                    }
+                },
+                "type": "object"
+            },
+            "WeatherConditionResource": {
+                "properties": {
+                    "file_updated": {
+                        "type": "datetime",
+                        "example": "2020-08-13 16:00:00",
+						"x-faker": date.past
+                    },
+                    "day": {
+                        "type": "date",
+                        "example": "2020-08-15"
+                    },
+                    "hour": {
+                        "type": "integer",
+                        "example": 13
+                    },
+                    "risk": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "rain": {
+                        "type": "string",
+                        "example": "2.1",
+						"x-faker": name.firstName
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "requestBodies": {
+            "response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "example": "Server message"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "response_201": {
+                "description": "Successful created",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "example": "Server message"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "response_401": {
+                "description": "Error: Unauthorized",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "example": "Unauthenticated."
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "response_404": {
+                "description": "Error: Not Found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "example": "Not Found"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "response_500": {
+                "description": "Error: Internal Server Error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "example": "Internal server error prueba"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "request_burn_store": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "municipality_id",
+                                "polygon",
+                                "parcel",
+                                "enclosure",
+                                "latitude",
+                                "longitude",
+                                "risk"
+                            ],
+                            "properties": {
+                                "municipality_id": {
+                                    "title": "required|integer|exists:municipalities",
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "polygon": {
+                                    "title": "required|string|max:40",
+                                    "type": "string",
+                                    "example": "24"
+                                },
+                                "parcel": {
+                                    "title": "required|string|max:40",
+                                    "type": "string",
+                                    "example": "188"
+                                },
+                                "enclosure": {
+                                    "title": "required|string|max:20",
+                                    "type": "string",
+                                    "example": "2"
+                                },
+                                "latitude": {
+                                    "title": "Latitude -> required|numeric",
+                                    "type": "numeric",
+                                    "example": 40.4169019
+                                },
+                                "longitude": {
+                                    "title": "Longitude -> required|numeric",
+                                    "type": "numeric",
+                                    "example": -3.7056774
+                                },
+                                "risk": {
+                                    "title": "required|integer|min:0|max:5",
+                                    "type": "integer",
+                                    "example": 2
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "burn_store_response_422": {
+                "description": "Error: Unprocessable Entity",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "example": "The given data was invalid."
+                                },
+                                "errors": {
+                                    "description": "these are the fields of the request",
+                                    "properties": {
+                                        "municipality_id": {
+                                            "items": {
+                                                "example": "The municipality_id field is required."
+                                            }
+                                        },
+                                        "latitude": {
+                                            "example": [
+                                                "The lat must be a number."
+                                            ]
+                                        },
+                                        "longitude": {
+                                            "example": [
+                                                "The long field is required."
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "burn_index_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "items": {
+                                "$ref": "#/components/schemas/BurnHistoryResource"
+                            }
+                        }
+                    }
+                }
+            },
+            "burn_show_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/BurnResource"
+                        }
+                    }
+                }
+            },
+            "enclosure_index_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "items": {
+                                "$ref": "#/components/schemas/EnclosureResource"
+                            }
+                        }
+                    }
+                }
+            },
+            "municipality_index_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "items": {
+                                "$ref": "#/components/schemas/MunicipalityResource"
+                            }
+                        }
+                    }
+                }
+            },
+            "municipality_show_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/MunicipalityResource"
+                        }
+                    }
+                }
+            },
+            "parcel_index_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "items": {
+                                "$ref": "#/components/schemas/ParcelResource"
+                            }
+                        }
+                    }
+                }
+            },
+            "parcel_show_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ParcelResource"
+                        }
+                    }
+                }
+            },
+            "province_index_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "items": {
+                                "$ref": "#/components/schemas/ProvinceResource"
+                            }
+                        }
+                    }
+                }
+            },
+            "province_show_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ProvinceResource"
+                        }
+                    }
+                }
+            },
+            "user_index_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "items": {
+                                "$ref": "#/components/schemas/UserResource"
+                            }
+                        }
+                    }
+                }
+            },
+            "user_show_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/UserResource"
+                        }
+                    }
+                }
+            },
+            "weatherCondition_index_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "items": {
+                                "$ref": "#/components/schemas/WeatherConditionResource"
+                            }
+                        }
+                    }
+                }
+            },
+            "weatherCondition_show_response_200": {
+                "description": "OK",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/WeatherConditionResource"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "api_key": {
+                "type": "apiKey",
+                "description": "Enter in the following field 'Bearer' followed by the token obtained in the endpoint /auth/login",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "API Endpoints of Auth"
+        },
+        {
+            "name": "Burns",
+            "description": "API Endpoints of Burns"
+        },
+        {
+            "name": "Enclosures",
+            "description": "API Endpoints of Enclosures"
+        },
+        {
+            "name": "Municipalities",
+            "description": "API Endpoints of Municipalities"
+        },
+        {
+            "name": "Parcels",
+            "description": "API Endpoints of Parcels"
+        },
+        {
+            "name": "Provinces",
+            "description": "API Endpoints of Provinces"
+        },
+        {
+            "name": "Users",
+            "description": "API Endpoints of Users"
+        },
+        {
+            "name": "Risk conditions",
+            "description": "API Endpoints of Risk conditions"
+        }
+    ],
+    "externalDocs": {
+        "description": "QueparApp",
+        "url": ""
+    }
+}
